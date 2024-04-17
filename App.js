@@ -1,27 +1,75 @@
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import RegisterScreen from "./RegisterScreen";
-import LoginScreen from "./LoginScreen";
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, Text, StyleSheet } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "./HomeScreen";
-export default function App() {
-  const [showLogin, setShowLogin] = useState(true);
+import MessageScreen from "./MessageScreen";
+import SettingsScreen from "./SettingsScreen";
 
-  return (
-    <View style={styles.container}>
-      {showLogin ? (
-        <LoginScreen toggleScreen={() => setShowLogin(false)} />
-      ) : (
-        <RegisterScreen toggleScreen={() => setShowLogin(true)} />
-      )}
-    </View>
-  );
-}
+const Tab = createBottomTabNavigator();
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
+  tabBar: {
+    backgroundColor: "#000",
+    borderTopColor: "#e0e0e0",
+    borderTopWidth: 1,
+    shadowOffset: { height: -2, width: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    height: 50,
+    justifyContent: "space-evenly",
     alignItems: "center",
-    justifyContent: "center",
+  },
+  headerStyle: {
+    backgroundColor: "#000",
+    shadowOffset: { height: 2, width: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerTitleStyle: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: "#DAA520",
   },
 });
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          headerStyle: styles.headerStyle,
+          headerTitleStyle: styles.headerTitleStyle,
+          headerTitleAlign: "center",
+          tabBarIcon: ({ color, size }) => {
+            const icons = {
+              Home: "home",
+              Messages: "message",
+              Account: "account",
+            };
+            return (
+              <MaterialCommunityIcons
+                name={icons[route.name]}
+                size={size}
+                color={color}
+              />
+            );
+          },
+          tabBarStyle: styles.tabBar, // Use tabBarStyle here
+          tabBarActiveTintColor: "#DAA520",
+          tabBarInactiveTintColor: "gray",
+          tabBarLabelStyle: {
+            fontWeight: "bold",
+          },
+        })}
+      >
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Messages" component={MessageScreen} />
+        <Tab.Screen name="Account" component={SettingsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
