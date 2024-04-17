@@ -205,21 +205,32 @@ const HomeScreen = () => {
           </View>
         </ScrollView>
         <View style={styles.bottomSection}>
-          <TextInput
-            style={styles.input}
-            value={quantity.toString()}
-            onChangeText={(text) => setQuantity(Number(text))}
-            keyboardType="number-pad"
-          />
           <View style={styles.buttonWrapper}>
-            <Button title="-" onPress={() => handleQuantityChange("-")} />
-            <Button title="+" onPress={() => handleQuantityChange("+")} />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleQuantityChange("-")}
+            >
+              <Text style={styles.buttonText}>-</Text>
+            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              value={quantity.toString()}
+              onChangeText={(text) => setQuantity(Number(text))}
+              keyboardType="number-pad"
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleQuantityChange("+")}
+            >
+              <Text style={styles.buttonText}>+</Text>
+            </TouchableOpacity>
           </View>
-          <Button
-            title="Generate Cards"
+          <TouchableOpacity
+            style={styles.generateButton}
             onPress={() => generateBingoCards(quantity)}
-            color="#DAA520"
-          />
+          >
+            <Text style={styles.generateButtonText}>Comprar cartones</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.userInfoContainer}>
           <Text style={styles.userInfoText}>User: John Doe</Text>
@@ -310,7 +321,41 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     flexDirection: "row",
-    marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  button: {
+    width: 50,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
+    backgroundColor: "#DAA520",
+    borderRadius: 25,
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    shadowOffset: { width: 1, height: 1 },
+    elevation: 6,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  generateButton: {
+    backgroundColor: "#4CAF50",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
+    elevation: 8,
+  },
+  generateButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   bingoCardContainer: {
     flexDirection: "column",
@@ -354,6 +399,21 @@ const styles = StyleSheet.create({
   scrollableContent: {
     flex: 1,
     marginBottom: 50,
+  },
+  input: {
+    width: 60,
+    height: 40,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    backgroundColor: "#fff",
+    borderRadius: 25,
+    color: "#333",
+    marginHorizontal: 10,
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    shadowOffset: { width: 1, height: 1 },
+    elevation: 4,
   },
 });
 
