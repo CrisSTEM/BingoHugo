@@ -6,42 +6,40 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  TextInput,
   Animated,
+  Button,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const numbers = [...Array(90).keys()].map((i) => i + 1);
+// Constants and Helpers
+const numbers = Array.from({ length: 90 }, (_, i) => i + 1);
 
+// Components
 const BingoBall = ({ number, color, isActive, onPress, size }) => {
   const scale = new Animated.Value(1);
-
-  const handlePressIn = () => {
+  const handlePress = () => {
     Animated.spring(scale, {
-      toValue: 1.1,
+      toValue: isActive ? 1 : 1.1,
       friction: 4,
       useNativeDriver: true,
     }).start();
   };
-
-  const handlePressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      friction: 4,
-      useNativeDriver: true,
-    }).start();
-  };
-
   return (
     <TouchableOpacity
       onPress={() => onPress(number)}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      onPressIn={handlePress}
+      onPressOut={() => scale.setValue(1)}
     >
       <Animated.View
         style={[
           styles.bingoBallContainer,
-          { transform: [{ scale }] },
-          { shadowColor: isActive ? color : "#ccc" },
-          { width: size + 10, height: size + 10 },
+          {
+            transform: [{ scale }],
+            shadowColor: isActive ? color : "#ccc",
+            width: size,
+            height: size,
+          },
         ]}
       >
         <View
@@ -65,13 +63,43 @@ const BingoBall = ({ number, color, isActive, onPress, size }) => {
     </TouchableOpacity>
   );
 };
+const BingoCard = ({ numbers }) => (
+  <View style={styles.bingoCardContainer}>
+    {numbers.map((row, rowIndex) => (
+      <View key={rowIndex} style={styles.bingoRow}>
+        {row.map((number, cellIndex) => (
+          <Text key={cellIndex} style={styles.bingoCell}>
+            {number}
+          </Text>
+        ))}
+      </View>
+    ))}
+  </View>
+);
 
-const App = () => {
+const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers }) => (
+  <View style={styles.numberRow}>
+    {numbers.map((number) => (
+      <BingoBall
+        key={number}
+        number={number}
+        color={color}
+        isActive={activeNumbers.has(number)}
+        onPress={toggleNumber}
+        size={size}
+      />
+    ))}
+  </View>
+);
+
+const HomeScreen = () => {
   const [activeNumbers, setActiveNumbers] = useState(new Set());
   const [currentNumber, setCurrentNumber] = useState(null);
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString()
   );
+  const [quantity, setQuantity] = useState(1);
+  const [bingoCards, setBingoCards] = useState([]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -81,57 +109,32 @@ const App = () => {
   }, []);
 
   const toggleNumber = (number) => {
-    setCurrentNumber(number);
     const newActiveNumbers = new Set(activeNumbers);
-    if (newActiveNumbers.has(number)) {
-      newActiveNumbers.delete(number);
-    } else {
-      newActiveNumbers.add(number);
-    }
+    newActiveNumbers.has(number)
+      ? newActiveNumbers.delete(number)
+      : newActiveNumbers.add(number);
     setActiveNumbers(newActiveNumbers);
+    setCurrentNumber(number);
+  };
+  const generateBingoNumbers = () => {
+    let cardNumbers = [];
+    for (let row = 0; row < 3; row++) {
+      let rowNumbers = [];
+      for (let col = 0; col < 9; col++) {
+        rowNumbers.push(Math.floor(Math.random() * 90) + 1); // Genera números al azar
+      }
+      cardNumbers.push(rowNumbers);
+    }
+    return cardNumbers;
   };
 
-  const renderRow = (rowNumbers, color) => (
-    <View style={styles.numberRow}>
-      {rowNumbers.map((number) => (
-        <BingoBall
-          key={number}
-          number={number}
-          color={color}
-          isActive={activeNumbers.has(number)}
-          onPress={toggleNumber}
-          size={75}
-        />
-      ))}
-    </View>
-  );
-
-  const renderPastNumbers = () => (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.pastNumbersContainer}
-    >
-      {Array.from(activeNumbers).map((number) => (
-        <BingoBall
-          key={number}
-          number={number}
-          color="#ccc"
-          isActive={true}
-          onPress={() => {}}
-          size={40}
-        />
-      ))}
-    </ScrollView>
-  );
-
-  const renderUserInfo = () => (
-    <View style={styles.userInfoContainer}>
-      <Text style={styles.userInfoText}>User: John Doe</Text>
-      <Text style={styles.userInfoText}>Time: {currentTime}</Text>
-      <Text style={styles.userInfoText}>BINGO</Text>
-    </View>
-  );
+  const generateBingoCards = (quantity) => {
+    const newCards = Array.from({ length: quantity }, generateBingoNumbers);
+    setBingoCards(newCards);
+  };
+  const handleQuantityChange = (type) => {
+    setQuantity((prev) => (type === "+" ? prev + 1 : Math.max(prev - 1, 1)));
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -141,18 +144,77 @@ const App = () => {
           color="#ffb74d"
           isActive={true}
           onPress={() => {}}
-          size={100}
+          size={60}
         />
-        {renderPastNumbers()}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.pastNumbersContainer}
+        >
+          {Array.from(activeNumbers).map((number) => (
+            <BingoBall
+              key={number}
+              number={number}
+              color="#ccc"
+              isActive={true}
+              onPress={() => {}}
+              size={30}
+            />
+          ))}
+        </ScrollView>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.horizontalContainer}>
-          {renderRow(numbers.slice(0, 30), "#e57373")}
-          {renderRow(numbers.slice(30, 60), "#64b5f6")}
-          {renderRow(numbers.slice(60, 90), "#81c784")}
+          <NumberRows
+            numbers={numbers.slice(0, 30)}
+            color="#e57373"
+            size={50}
+            toggleNumber={toggleNumber}
+            activeNumbers={activeNumbers}
+          />
+          <NumberRows
+            numbers={numbers.slice(30, 60)}
+            color="#64b5f6"
+            size={50}
+            toggleNumber={toggleNumber}
+            activeNumbers={activeNumbers}
+          />
+          <NumberRows
+            numbers={numbers.slice(60, 90)}
+            color="#81c784"
+            size={50}
+            toggleNumber={toggleNumber}
+            activeNumbers={activeNumbers}
+          />
         </View>
       </ScrollView>
-      {renderUserInfo()}
+      <View style={styles.bottomSection}>
+        <TextInput
+          style={styles.input}
+          value={quantity.toString()}
+          onChangeText={(text) => setQuantity(Number(text))}
+          keyboardType="number-pad"
+        />
+        <View style={styles.buttonWrapper}>
+          <Button title="-" onPress={() => handleQuantityChange("-")} />
+          <Button title="+" onPress={() => handleQuantityChange("+")} />
+        </View>
+        <Button
+          title="Generate Cards"
+          onPress={() => generateBingoCards(quantity)}
+          color="#DAA520"
+        />
+      </View>
+      <View style={styles.userInfoContainer}>
+        <Text style={styles.userInfoText}>User: John Doe</Text>
+        <Text style={styles.userInfoText}>Time: {currentTime}</Text>
+        <Text style={styles.userInfoText}>BINGO</Text>
+      </View>
+      <ScrollView vertical showsHorizontalScrollIndicator={false}>
+        {bingoCards.map((cardNumbers, index) => (
+          <BingoCard key={index} numbers={cardNumbers} />
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -160,8 +222,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "rgba(20, 20, 20, 0.85)",
   },
   horizontalContainer: {
     flexDirection: "column",
@@ -207,7 +268,60 @@ const styles = StyleSheet.create({
   userInfoText: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#DAA520",
+  },
+  bottomSection: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  input: {
+    width: 50,
+    height: 40,
+    backgroundColor: "#fff",
+    textAlign: "center",
+    marginRight: 10,
+  },
+  buttonWrapper: {
+    flexDirection: "row",
+    marginRight: 10,
+  },
+  cardsContainer: {
+    flexDirection: "column",
+    padding: 10,
+  },
+  cardsInnerContainer: {
+    flexDirection: "column",
+  },
+  bingoCardContainer: {
+    flexDirection: "column", // Modificado para distribución vertical
+    backgroundColor: "white",
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 10,
+    margin: 5,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  bingoRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  bingoCell: {
+    width: 32,
+    height: 32,
+    borderWidth: 1,
+    borderColor: "grey",
+    textAlign: "center",
+    lineHeight: 32,
+    borderRadius: 5,
+    backgroundColor: "rgba(255,255,255,0.8)",
   },
 });
 
-export default App;
+export default HomeScreen;
