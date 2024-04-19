@@ -13,12 +13,12 @@ import {
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { signOut, auth } from "./firebaseConfig";
-import { useAuth } from "./AuthContext";
-import MusicPlayer from "./MusicPlayer";
+import { signOut, auth } from "../config/firebaseConfig";
+import { useAuth } from "../contexts/AuthContext";
+import MusicPlayer from "../components/MusicPlayer";
 import * as ImagePicker from "expo-image-picker";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "./firebaseConfig";
+import { storage } from "../config/firebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import defaultAvatar from "./assets/images/avatar.png";

@@ -13,7 +13,7 @@ import {
   Easing,
 } from "react-native";
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-import { auth, createUserWithEmailAndPassword } from "./firebaseConfig";
+import { auth, createUserWithEmailAndPassword } from "../config/firebaseConfig";
 
 const { width } = Dimensions.get("window");
 

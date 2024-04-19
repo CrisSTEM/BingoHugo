@@ -1,8 +1,8 @@
 // AuthNavigator.js
 
 import React, { useState } from "react";
-import LoginScreen from "./LoginScreen";
-import RegisterScreen from "./RegisterScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 
 const AuthNavigator = () => {
   const [showLogin, setShowLogin] = useState(true);

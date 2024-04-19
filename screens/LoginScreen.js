@@ -1,6 +1,6 @@
 // LoginScreen.js
 import React, { useState, useEffect } from "react";
-import { auth } from "./firebaseConfig";
+import { auth } from "../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {
   StyleSheet,
@@ -17,7 +17,7 @@ import {
   Easing,
 } from "react-native";
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const { width } = Dimensions.get("window");
 

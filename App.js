@@ -1,8 +1,8 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { AuthProvider, useAuth } from "./AuthContext";
-import AuthNavigator from "./AuthNavigator";
-import Navigation from "./Navigation";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import AuthNavigator from "./navigation/AuthNavigator";
+import Navigation from "./navigation/Navigation";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
