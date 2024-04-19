@@ -8,7 +8,7 @@ const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const loadSound = async () => {
-    const { sound } = await Audio.Sound.createAsync(require("./assets/audios/BG.mp3"));
+    const { sound } = await Audio.Sound.createAsync(require("../assets/audios/BG.mp3"));
     setSound(sound);
   };
 

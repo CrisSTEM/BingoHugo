@@ -21,7 +21,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../config/firebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
-import defaultAvatar from "./assets/images/avatar.png";
+import defaultAvatar from "../assets/images/avatar.png";
 const { width, height } = Dimensions.get("window");
 
 const SettingsOption = ({ title, iconName, iconType, onPress }) => {

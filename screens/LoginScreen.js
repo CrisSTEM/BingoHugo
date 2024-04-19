@@ -21,7 +21,12 @@ import { useAuth } from "../contexts/AuthContext";
 
 const { width } = Dimensions.get("window");
 
-function LoginScreen({ toggleScreen }) {
+function LoginScreen({ toggleScreen, registrationSuccess }) {
+  useEffect(() => {
+    if (registrationSuccess) {
+      Alert.alert("Registro Exitoso", "¡Tu cuenta ha sido creada con éxito!");
+    }
+  }, [registrationSuccess]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const fadeAnim = new Animated.Value(0);
@@ -63,7 +68,11 @@ function LoginScreen({ toggleScreen }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
-      <ImageBackground source={require("./assets/images/Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
+      <ImageBackground
+        source={require("../assets/images/Fondo.webp")}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Animated.View style={[styles.formContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
             <MaterialCommunityIcons name="numeric-8-circle-outline" size={50} color="#DAA520" />

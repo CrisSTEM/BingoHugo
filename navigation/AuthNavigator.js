@@ -6,16 +6,29 @@ import RegisterScreen from "../screens/RegisterScreen";
 
 const AuthNavigator = () => {
   const [showLogin, setShowLogin] = useState(true);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
-  const showLoginScreen = () => setShowLogin(true);
-  const showRegisterScreen = () => setShowLogin(false);
+  const showLoginScreen = () => {
+    setShowLogin(true);
+    setRegistrationSuccess(false);
+  };
+
+  const showRegisterScreen = () => {
+    setShowLogin(false);
+    setRegistrationSuccess(false);
+  };
+
+  const handleSuccess = () => {
+    setRegistrationSuccess(true);
+    setShowLogin(true);
+  };
 
   return (
     <>
       {showLogin ? (
-        <LoginScreen toggleScreen={showRegisterScreen} />
+        <LoginScreen toggleScreen={showRegisterScreen} registrationSuccess={registrationSuccess} />
       ) : (
-        <RegisterScreen toggleScreen={showLoginScreen} />
+        <RegisterScreen toggleScreen={showLoginScreen} onRegistrationSuccess={handleSuccess} />
       )}
     </>
   );

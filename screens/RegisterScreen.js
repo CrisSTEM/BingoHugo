@@ -13,11 +13,13 @@ import {
   Easing,
 } from "react-native";
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-import { auth, createUserWithEmailAndPassword } from "../config/firebaseConfig";
+
+import { auth, createUserWithEmailAndPassword, firestore } from "../config/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 const { width } = Dimensions.get("window");
 
-function RegisterScreen({ toggleScreen }) {
+function RegisterScreen({ onRegistrationSuccess, toggleScreen }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,17 +55,27 @@ function RegisterScreen({ toggleScreen }) {
     }
     createUserWithEmailAndPassword(auth, email.trim(), password.trim())
       .then((userCredential) => {
-        console.log("Usuario registrado:", userCredential.user);
-        // Aquí podrías redirigir al usuario o actualizar el estado de la UI
+        const userRef = collection(firestore, "users");
+        addDoc(userRef, {
+          uid: userCredential.user.uid,
+          username: username,
+          email: userCredential.user.email,
+        })
+          .then(() => {
+            console.log("Usuario registrado en Firestore con éxito");
+            onRegistrationSuccess(); // Llamar al callback
+          })
+          .catch((error) => {
+            console.error("Error al registrar usuario en Firestore:", error);
+          });
       })
       .catch((error) => {
         console.error("Error al registrar usuario:", error);
-        Alert.alert("Error al registrar usuario", error.message);
       });
   };
 
   return (
-    <ImageBackground source={require("./assets/images/Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
+    <ImageBackground source={require("../assets/images/Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Animated.View style={[styles.formContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
           <MaterialCommunityIcons name="account-plus-outline" size={50} color="#DAA520" />
