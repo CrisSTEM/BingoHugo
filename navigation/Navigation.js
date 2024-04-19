@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "../screens/HomeScreen";
-import MessageScreen from "../screens/MessageScreen";
+import ChatScreen from "../screens/ChatsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { StyleSheet } from "react-native";
 
@@ -59,7 +59,7 @@ function Navigation() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Messages" component={MessageScreen} />
+      <Tab.Screen name="Messages" component={ChatScreen} />
       <Tab.Screen name="Account" component={SettingsScreen} />
     </Tab.Navigator>
   );
