@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-  Dimensions,
-} from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, SafeAreaView, Dimensions } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -43,28 +33,11 @@ const chats = [
   },
 ];
 
-const ChatItem = ({
-  name,
-  lastMessage,
-  timestamp,
-  avatar,
-  seen,
-  unreadCount,
-}) => (
-  <TouchableOpacity
-    style={styles.chatItem}
-    onPress={() => console.log("Chat presionado")}
-  >
+const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount }) => (
+  <TouchableOpacity style={styles.chatItem} onPress={() => console.log("Chat presionado")}>
     <Image source={avatar} style={styles.avatar} />
     <View style={styles.chatInfo}>
-      <Text
-        style={[
-          styles.chatName,
-          unreadCount > 0 ? styles.chatNameActive : null,
-        ]}
-      >
-        {name}
-      </Text>
+      <Text style={[styles.chatName, unreadCount > 0 ? styles.chatNameActive : null]}>{name}</Text>
       <Text style={styles.lastMessage} numberOfLines={1}>
         {lastMessage}
       </Text>
@@ -76,9 +49,7 @@ const ChatItem = ({
           <Text style={styles.unreadCountText}>{unreadCount}</Text>
         </View>
       )}
-      {seen && !unreadCount && (
-        <Image source={require("./check.png")} style={styles.seenIcon} />
-      )}
+      {seen && !unreadCount && <Image source={require("./check.png")} style={styles.seenIcon} />}
     </View>
   </TouchableOpacity>
 );
@@ -87,11 +58,7 @@ const ChatsScreen = () => {
   const renderItem = ({ item }) => <ChatItem {...item} />;
   return (
     <SafeAreaView style={styles.safeArea}>
-      <FlatList
-        data={chats}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <FlatList data={chats} renderItem={renderItem} keyExtractor={(item) => item.id} />
     </SafeAreaView>
   );
 };

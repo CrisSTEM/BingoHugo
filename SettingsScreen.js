@@ -1,35 +1,19 @@
 import React from "react";
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { signOut, auth } from "./firebaseConfig";
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
 const SettingsOption = ({ title, iconName, iconType }) => {
-  const Icon =
-    iconType === "FontAwesome"
-      ? FontAwesome
-      : iconType === "AntDesign"
-      ? AntDesign
-      : MaterialCommunityIcons;
+  const Icon = iconType === "FontAwesome" ? FontAwesome : iconType === "AntDesign" ? AntDesign : MaterialCommunityIcons;
 
   return (
     <TouchableOpacity style={styles.option}>
-      <Icon
-        name={iconName}
-        size={24}
-        color="#DAA520"
-        style={styles.optionIcon}
-      />
+      <Icon name={iconName} size={24} color="#DAA520" style={styles.optionIcon} />
       <Text style={styles.optionText}>{title}</Text>
       <AntDesign name="right" size={24} color="#c7c7c7" />
     </TouchableOpacity>
@@ -37,25 +21,29 @@ const SettingsOption = ({ title, iconName, iconType }) => {
 };
 
 const SettingsScreen = () => {
+  const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate("LoginScreen");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
         <View style={styles.content}>
-          <SettingsOption
-            title="Música"
-            iconName="music"
-            iconType="FontAwesome"
-          />
-          <SettingsOption
-            title="Notificaciones"
-            iconName="bells"
-            iconType="AntDesign"
-          />
-          <SettingsOption
-            title="Cuenta"
-            iconName="account"
-            iconType="MaterialCommunityIcons"
-          />
+          <SettingsOption title="Música" iconName="music" iconType="FontAwesome" />
+          <SettingsOption title="Notificaciones" iconName="bells" iconType="AntDesign" />
+          <SettingsOption title="Cuenta" iconName="account" iconType="MaterialCommunityIcons" />
+          {/* Agregar opción de logout */}
+          <TouchableOpacity style={styles.option} onPress={handleLogout}>
+            <MaterialCommunityIcons name="logout" size={24} color="#DAA520" style={styles.optionIcon} />
+            <Text style={styles.optionText}>Cerrar sesión</Text>
+            <AntDesign name="right" size={24} color="#c7c7c7" />
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

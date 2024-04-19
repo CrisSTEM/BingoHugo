@@ -12,13 +12,10 @@ import {
   Dimensions,
   Easing,
 } from "react-native";
-import {
-  FontAwesome,
-  AntDesign,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { auth, createUserWithEmailAndPassword } from "./firebaseConfig";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 function RegisterScreen({ toggleScreen }) {
   const [username, setUsername] = useState("");
@@ -46,39 +43,33 @@ function RegisterScreen({ toggleScreen }) {
   }, []);
 
   const handleRegister = () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+    if (username.trim() === "" || email.trim() === "" || password.trim() === "") {
+      Alert.alert("Error", "All fields are required.");
       return;
     }
-    Alert.alert("Register Attempt", `Username: ${username}, Email: ${email}`);
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match.");
+      return;
+    }
+    createUserWithEmailAndPassword(auth, email.trim(), password.trim())
+      .then((userCredential) => {
+        console.log("Usuario registrado:", userCredential.user);
+        // Aquí podrías redirigir al usuario o actualizar el estado de la UI
+      })
+      .catch((error) => {
+        console.error("Error al registrar usuario:", error);
+        Alert.alert("Error al registrar usuario", error.message);
+      });
   };
 
   return (
-    <ImageBackground
-      source={require("./Fondo.webp")}
-      style={styles.backgroundImage}
-      resizeMode="cover"
-    >
+    <ImageBackground source={require("./Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Animated.View
-          style={[
-            styles.formContainer,
-            { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="account-plus-outline"
-            size={50}
-            color="#DAA520"
-          />
+        <Animated.View style={[styles.formContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+          <MaterialCommunityIcons name="account-plus-outline" size={50} color="#DAA520" />
           <Text style={styles.title}>Registrate en Hugo Bingo!</Text>
           <View style={styles.inputContainer}>
-            <AntDesign
-              name="user"
-              size={20}
-              color="#FFD700"
-              style={styles.iconStyle}
-            />
+            <AntDesign name="user" size={20} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setUsername}
@@ -88,12 +79,7 @@ function RegisterScreen({ toggleScreen }) {
             />
           </View>
           <View style={styles.inputContainer}>
-            <MaterialCommunityIcons
-              name="email-outline"
-              size={20}
-              color="#FFD700"
-              style={styles.iconStyle}
-            />
+            <MaterialCommunityIcons name="email-outline" size={20} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setEmail}
@@ -104,12 +90,7 @@ function RegisterScreen({ toggleScreen }) {
             />
           </View>
           <View style={styles.inputContainer}>
-            <FontAwesome
-              name="lock"
-              size={20}
-              color="#FFD700"
-              style={styles.iconStyle}
-            />
+            <FontAwesome name="lock" size={20} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setPassword}
@@ -120,12 +101,7 @@ function RegisterScreen({ toggleScreen }) {
             />
           </View>
           <View style={styles.inputContainer}>
-            <FontAwesome
-              name="lock"
-              size={20}
-              color="#FFD700"
-              style={styles.iconStyle}
-            />
+            <FontAwesome name="lock" size={20} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setConfirmPassword}
@@ -136,10 +112,7 @@ function RegisterScreen({ toggleScreen }) {
             />
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.registerButton}
-              onPress={handleRegister}
-            >
+            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
               <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.loginButton} onPress={toggleScreen}>

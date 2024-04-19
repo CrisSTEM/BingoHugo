@@ -131,14 +131,72 @@ const HomeScreen = () => {
   };
 
   const generateBingoNumbers = () => {
-    let cardNumbers = [];
-    for (let row = 0; row < 3; row++) {
-      let rowNumbers = [];
-      for (let col = 0; col < 9; col++) {
-        rowNumbers.push(Math.floor(Math.random() * 90) + 1); // Random number generation
+    let cardNumbers = Array(3)
+      .fill(null)
+      .map(() => Array(9).fill(null));
+
+    const numbers = Array.from({ length: 9 }, (_, i) =>
+      Array.from({ length: 10 }, (__, k) => i * 10 + k + 1)
+    );
+
+    numbers.forEach((colNumbers, colIndex) => {
+      colNumbers.sort(() => Math.random() - 0.5);
+
+      const selectedNumbers = colNumbers.slice(0, 3).sort((a, b) => a - b);
+
+      let filledPositions = [];
+      while (filledPositions.length < 3) {
+        let position = Math.floor(Math.random() * 3);
+        if (!filledPositions.includes(position)) {
+          filledPositions.push(position);
+        }
       }
-      cardNumbers.push(rowNumbers);
+
+      filledPositions.forEach((position, index) => {
+        cardNumbers[position][colIndex] = selectedNumbers[index];
+      });
+    });
+
+    // Selección aleatoria de 12 posiciones para vaciar
+    let positionsToClear = [];
+    while (positionsToClear.length < 12) {
+      let randomRow = Math.floor(Math.random() * 3);
+      let randomCol = Math.floor(Math.random() * 9);
+      let pos = randomRow * 9 + randomCol;
+      if (!positionsToClear.includes(pos)) {
+        positionsToClear.push(pos);
+      }
     }
+
+    // Vaciar las posiciones seleccionadas
+    positionsToClear.forEach((pos) => {
+      let row = Math.floor(pos / 9);
+      let col = pos % 9;
+      cardNumbers[row][col] = null;
+    });
+
+    // Recolectar todos los números restantes
+    let remainingNumbers = [];
+    for (let col = 0; col < 9; col++) {
+      for (let row = 0; row < 3; row++) {
+        if (cardNumbers[row][col] !== null) {
+          remainingNumbers.push(cardNumbers[row][col]);
+        }
+      }
+    }
+
+    remainingNumbers.sort((a, b) => a - b);
+
+    // Reasignar los números ordenados al cartón siguiendo el nuevo orden vertical
+    let index = 0;
+    for (let col = 0; col < 9; col++) {
+      for (let row = 0; row < 3; row++) {
+        if (cardNumbers[row][col] !== null) {
+          cardNumbers[row][col] = remainingNumbers[index++];
+        }
+      }
+    }
+
     return cardNumbers;
   };
 
@@ -229,7 +287,7 @@ const HomeScreen = () => {
             style={styles.generateButton}
             onPress={() => generateBingoCards(quantity)}
           >
-            <Text style={styles.generateButtonText}>Comprar cartones</Text>
+            <Text style={styles.generateButtonText}>Comprar cartones </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.userInfoContainer}>

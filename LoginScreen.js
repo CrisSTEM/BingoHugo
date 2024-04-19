@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { auth } from "./firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import {
   StyleSheet,
   Text,
@@ -13,16 +15,12 @@ import {
   Dimensions,
   Easing,
 } from "react-native";
-import {
-  FontAwesome,
-  AntDesign,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 function LoginScreen({ toggleScreen }) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const fadeAnim = new Animated.Value(0);
   const scaleAnim = new Animated.Value(0);
@@ -45,54 +43,40 @@ function LoginScreen({ toggleScreen }) {
   }, []);
 
   const handleLogin = () => {
-    Alert.alert(
-      "Login Attempt",
-      `Username: ${username}, Password: ${password}`
-    );
+    if (email.trim() === "" || password.trim() === "") {
+      Alert.alert("Error", "Email and password fields cannot be empty.");
+      return;
+    }
+    signInWithEmailAndPassword(auth, email.trim(), password.trim())
+      .then((userCredential) => {
+        Alert.alert("Login Successful", "You are now logged in!");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        Alert.alert("Login Failed", errorMessage);
+      });
   };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
-      <ImageBackground
-        source={require("./Fondo.webp")}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      >
+      <ImageBackground source={require("./Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Animated.View
-            style={[
-              styles.formContainer,
-              { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="numeric-8-circle-outline"
-              size={50}
-              color="#DAA520"
-            />
+          <Animated.View style={[styles.formContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+            <MaterialCommunityIcons name="numeric-8-circle-outline" size={50} color="#DAA520" />
             <Text style={styles.title}>Bienvenido a Hugo Bingo!</Text>
             <View style={styles.inputContainer}>
-              <AntDesign
-                name="user"
-                size={20}
-                color="#FFD700"
-                style={styles.iconStyle}
-              />
+              <AntDesign name="user" size={20} color="#FFD700" style={styles.iconStyle} />
               <TextInput
                 style={styles.input}
-                onChangeText={setUsername}
-                value={username}
-                placeholder="Username"
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
                 placeholderTextColor="#c7c7c7"
               />
             </View>
             <View style={styles.inputContainer}>
-              <FontAwesome
-                name="lock"
-                size={20}
-                color="#FFD700"
-                style={styles.iconStyle}
-              />
+              <FontAwesome name="lock" size={20} color="#FFD700" style={styles.iconStyle} />
               <TextInput
                 style={styles.input}
                 onChangeText={setPassword}
@@ -103,16 +87,10 @@ function LoginScreen({ toggleScreen }) {
               />
             </View>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.loginButton}
-                onPress={handleLogin}
-              >
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.registerButton}
-                onPress={toggleScreen}
-              >
+              <TouchableOpacity style={styles.registerButton} onPress={toggleScreen}>
                 <Text style={styles.buttonText}>Register</Text>
               </TouchableOpacity>
             </View>
