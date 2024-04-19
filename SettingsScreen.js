@@ -4,7 +4,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { signOut, auth } from "./firebaseConfig";
-import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "./AuthContext";
 
 const { width } = Dimensions.get("window");
 
@@ -21,12 +21,12 @@ const SettingsOption = ({ title, iconName, iconType }) => {
 };
 
 const SettingsScreen = () => {
-  const navigation = useNavigation();
+  const { setIsAuthenticated } = useAuth();
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigation.navigate("LoginScreen");
+      setIsAuthenticated(false);
     } catch (error) {
       console.error("Error signing out: ", error);
     }
@@ -38,7 +38,6 @@ const SettingsScreen = () => {
           <SettingsOption title="Música" iconName="music" iconType="FontAwesome" />
           <SettingsOption title="Notificaciones" iconName="bells" iconType="AntDesign" />
           <SettingsOption title="Cuenta" iconName="account" iconType="MaterialCommunityIcons" />
-          {/* Agregar opción de logout */}
           <TouchableOpacity style={styles.option} onPress={handleLogout}>
             <MaterialCommunityIcons name="logout" size={24} color="#DAA520" style={styles.optionIcon} />
             <Text style={styles.optionText}>Cerrar sesión</Text>
