@@ -1,3 +1,5 @@
+// LoginScreen.js
+
 import React, { useState, useEffect } from "react";
 import { auth } from "./firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -16,6 +18,7 @@ import {
   Easing,
 } from "react-native";
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAuth } from "./AuthContext";
 
 const { width } = Dimensions.get("window");
 
@@ -24,7 +27,7 @@ function LoginScreen({ toggleScreen }) {
   const [password, setPassword] = useState("");
   const fadeAnim = new Animated.Value(0);
   const scaleAnim = new Animated.Value(0);
-
+  const { setIsAuthenticated } = useAuth();
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -50,6 +53,7 @@ function LoginScreen({ toggleScreen }) {
     signInWithEmailAndPassword(auth, email.trim(), password.trim())
       .then((userCredential) => {
         Alert.alert("Login Successful", "You are now logged in!");
+        setIsAuthenticated(true);
       })
       .catch((error) => {
         const errorCode = error.code;
