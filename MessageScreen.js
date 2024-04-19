@@ -11,7 +11,7 @@ const chats = [
     seen: true,
     unreadCount: 0,
     timestamp: "9:40 AM",
-    avatar: require("./avatar.png"),
+    avatar: require("./assets/images/avatar.png"),
   },
   {
     id: "2",
@@ -20,7 +20,7 @@ const chats = [
     seen: false,
     unreadCount: 1,
     timestamp: "Yesterday",
-    avatar: require("./avatar_2.webp"),
+    avatar: require("./assets/images/avatar_2.webp"),
   },
   {
     id: "3",
@@ -29,7 +29,7 @@ const chats = [
     seen: false,
     unreadCount: 2,
     timestamp: "Sunday",
-    avatar: require("./Avatar_3.png"),
+    avatar: require("./assets/images/Avatar_3.png"),
   },
 ];
 
@@ -49,7 +49,7 @@ const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount }) =
           <Text style={styles.unreadCountText}>{unreadCount}</Text>
         </View>
       )}
-      {seen && !unreadCount && <Image source={require("./check.png")} style={styles.seenIcon} />}
+      {seen && !unreadCount && <Image source={require("./assets/images/check.png")} style={styles.seenIcon} />}
     </View>
   </TouchableOpacity>
 );

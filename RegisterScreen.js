@@ -63,7 +63,7 @@ function RegisterScreen({ toggleScreen }) {
   };
 
   return (
-    <ImageBackground source={require("./Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
+    <ImageBackground source={require("./assets/images/Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Animated.View style={[styles.formContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
           <MaterialCommunityIcons name="account-plus-outline" size={50} color="#DAA520" />

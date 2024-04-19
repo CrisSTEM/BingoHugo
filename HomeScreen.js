@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Animated,
-  Button,
-} from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView, StyleSheet, View, ScrollView, Text, TouchableOpacity, TextInput, Animated } from "react-native";
 
 // Constants and Helpers
 const TOTAL_NUMBERS = 90;
@@ -33,11 +22,7 @@ const BingoBall = ({ number, color, isActive, onPress, size }) => {
   };
 
   return (
-    <TouchableOpacity
-      onPress={() => onPress(number)}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-    >
+    <TouchableOpacity onPress={() => onPress(number)} onPressIn={handlePressIn} onPressOut={handlePressOut}>
       <Animated.View
         style={[
           styles.bingoBallContainer,
@@ -62,9 +47,7 @@ const BingoBall = ({ number, color, isActive, onPress, size }) => {
             },
           ]}
         >
-          <Text style={[styles.bingoBallText, { fontSize: size / 3 }]}>
-            {number}
-          </Text>
+          <Text style={[styles.bingoBallText, { fontSize: size / 3 }]}>{number}</Text>
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -106,9 +89,7 @@ const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers }) => (
 const HomeScreen = () => {
   const [activeNumbers, setActiveNumbers] = useState(new Set());
   const [currentNumber, setCurrentNumber] = useState(null);
-  const [currentTime, setCurrentTime] = useState(
-    new Date().toLocaleTimeString()
-  );
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
   const [quantity, setQuantity] = useState(1);
   const [bingoCards, setBingoCards] = useState([]);
 
@@ -135,9 +116,7 @@ const HomeScreen = () => {
       .fill(null)
       .map(() => Array(9).fill(null));
 
-    const numbers = Array.from({ length: 9 }, (_, i) =>
-      Array.from({ length: 10 }, (__, k) => i * 10 + k + 1)
-    );
+    const numbers = Array.from({ length: 9 }, (_, i) => Array.from({ length: 10 }, (__, k) => i * 10 + k + 1));
 
     numbers.forEach((colNumbers, colIndex) => {
       colNumbers.sort(() => Math.random() - 0.5);
@@ -213,27 +192,14 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollableContent}>
         <View style={styles.currentAndPastContainer}>
-          <BingoBall
-            number={currentNumber || "-"}
-            color="#ffb74d"
-            isActive={true}
-            onPress={() => {}}
-            size={60}
-          />
+          <BingoBall number={currentNumber || "-"} color="#ffb74d" isActive={true} onPress={() => {}} size={60} />
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.pastNumbersContainer}
           >
             {Array.from(activeNumbers).map((number) => (
-              <BingoBall
-                key={number}
-                number={number}
-                color="#ccc"
-                isActive={true}
-                onPress={() => {}}
-                size={30}
-              />
+              <BingoBall key={number} number={number} color="#ccc" isActive={true} onPress={() => {}} size={30} />
             ))}
           </ScrollView>
         </View>
@@ -264,10 +230,7 @@ const HomeScreen = () => {
         </ScrollView>
         <View style={styles.bottomSection}>
           <View style={styles.buttonWrapper}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleQuantityChange("-")}
-            >
+            <TouchableOpacity style={styles.button} onPress={() => handleQuantityChange("-")}>
               <Text style={styles.buttonText}>-</Text>
             </TouchableOpacity>
             <TextInput
@@ -276,17 +239,11 @@ const HomeScreen = () => {
               onChangeText={(text) => setQuantity(Number(text))}
               keyboardType="number-pad"
             />
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleQuantityChange("+")}
-            >
+            <TouchableOpacity style={styles.button} onPress={() => handleQuantityChange("+")}>
               <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.generateButton}
-            onPress={() => generateBingoCards(quantity)}
-          >
+          <TouchableOpacity style={styles.generateButton} onPress={() => generateBingoCards(quantity)}>
             <Text style={styles.generateButtonText}>Comprar cartones </Text>
           </TouchableOpacity>
         </View>

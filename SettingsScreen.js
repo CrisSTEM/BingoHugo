@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView, ScrollView, View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { signOut, auth } from "./firebaseConfig";
 import { useAuth } from "./AuthContext";
+import { Audio } from "expo-av";
+import MusicPlayer from "./MusicPlayer";
 
 const { width } = Dimensions.get("window");
 
-const SettingsOption = ({ title, iconName, iconType }) => {
+const SettingsOption = ({ title, iconName, iconType, onPress }) => {
   const Icon = iconType === "FontAwesome" ? FontAwesome : iconType === "AntDesign" ? AntDesign : MaterialCommunityIcons;
 
   return (
-    <TouchableOpacity style={styles.option}>
+    <TouchableOpacity style={styles.option} onPress={onPress}>
       <Icon name={iconName} size={24} color="#DAA520" style={styles.optionIcon} />
       <Text style={styles.optionText}>{title}</Text>
       <AntDesign name="right" size={24} color="#c7c7c7" />
@@ -22,6 +24,11 @@ const SettingsOption = ({ title, iconName, iconType }) => {
 
 const SettingsScreen = () => {
   const { setIsAuthenticated } = useAuth();
+  const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+
+  const toggleMusicPlayer = () => {
+    setShowMusicPlayer(!showMusicPlayer);
+  };
 
   const handleLogout = async () => {
     try {
@@ -31,11 +38,13 @@ const SettingsScreen = () => {
       console.error("Error signing out: ", error);
     }
   };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
         <View style={styles.content}>
-          <SettingsOption title="Música" iconName="music" iconType="FontAwesome" />
+          <SettingsOption title="Música" iconName="music" iconType="FontAwesome" onPress={toggleMusicPlayer} />
+          {showMusicPlayer && <MusicPlayer />}
           <SettingsOption title="Notificaciones" iconName="bells" iconType="AntDesign" />
           <SettingsOption title="Cuenta" iconName="account" iconType="MaterialCommunityIcons" />
           <TouchableOpacity style={styles.option} onPress={handleLogout}>

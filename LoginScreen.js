@@ -1,5 +1,4 @@
 // LoginScreen.js
-
 import React, { useState, useEffect } from "react";
 import { auth } from "./firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -64,7 +63,7 @@ function LoginScreen({ toggleScreen }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
-      <ImageBackground source={require("./Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
+      <ImageBackground source={require("./assets/images/Fondo.webp")} style={styles.backgroundImage} resizeMode="cover">
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Animated.View style={[styles.formContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
             <MaterialCommunityIcons name="numeric-8-circle-outline" size={50} color="#DAA520" />
