@@ -9,7 +9,10 @@ import {
   Dimensions,
   Modal,
   Image,
+  TextInput,
 } from "react-native";
+import { format } from "date-fns";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -18,11 +21,10 @@ import { useAuth } from "../contexts/AuthContext";
 import MusicPlayer from "../components/MusicPlayer";
 import * as ImagePicker from "expo-image-picker";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../config/firebaseConfig";
-import { updateProfile } from "firebase/auth";
-import { onAuthStateChanged } from "firebase/auth";
+import { storage, firestore } from "../config/firebaseConfig";
+import { updateProfile, onAuthStateChanged } from "firebase/auth";
 import defaultAvatar from "../assets/images/avatar.png";
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const SettingsOption = ({ title, iconName, iconType, onPress }) => {
   const Icon = iconType === "FontAwesome" ? FontAwesome : iconType === "AntDesign" ? AntDesign : MaterialCommunityIcons;
@@ -35,7 +37,21 @@ const SettingsOption = ({ title, iconName, iconType, onPress }) => {
   );
 };
 
-const ModalView = ({ toggle, currentUser, pickImage }) => {
+const ModalView = ({ toggle, currentUser, pickImage, updateUsername }) => {
+  const [editing, setEditing] = useState(false);
+  const [newUsername, setNewUsername] = useState(currentUser?.displayName || ""); // use optional chaining
+
+  // Return an empty component or some loading indicator if currentUser is not set
+  if (!currentUser) {
+    return (
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <Text>Loading...</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
@@ -48,15 +64,39 @@ const ModalView = ({ toggle, currentUser, pickImage }) => {
         </TouchableOpacity>
 
         <View style={styles.userInfo}>
-          <Text style={styles.userInfoText}>
-            <FontAwesome name="user" size={16} /> Nombre: {currentUser.displayName}
-          </Text>
+          {editing ? (
+            <TextInput
+              style={styles.input}
+              value={newUsername}
+              onChangeText={setNewUsername}
+              placeholder="Introduce tu nuevo nombre"
+            />
+          ) : (
+            <Text style={styles.userInfoText}>
+              <FontAwesome name="user" size={16} /> Nombre: {currentUser.displayName}
+            </Text>
+          )}
           <Text style={styles.userInfoText}>
             <MaterialCommunityIcons name="email" size={16} /> Correo: {currentUser.email}
           </Text>
           <Text style={styles.userInfoText}>
             <MaterialCommunityIcons name="calendar-clock" size={16} /> Fecha de Creación: {currentUser.creationTime}
           </Text>
+          {editing ? (
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={() => {
+                updateUsername(newUsername);
+                setEditing(false);
+              }}
+            >
+              <Text style={styles.saveButtonText}>Guardar</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.editButton} onPress={() => setEditing(true)}>
+              <Text style={styles.editButtonText}>Editar</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <TouchableOpacity style={styles.buttonClose} onPress={toggle}>
@@ -75,16 +115,23 @@ const SettingsScreen = () => {
   const [image, setImage] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser({
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          creationTime: user.metadata.creationTime,
-        });
-        setImage(user.photoURL ? { uri: user.photoURL } : defaultAvatar);
+        const userRef = doc(firestore, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setCurrentUser({
+            uid: user.uid,
+            displayName: userData.username,
+            email: user.email,
+            photoURL: user.photoURL,
+            creationTime: format(new Date(user.metadata.creationTime), "PPP"),
+          });
+          setImage(user.photoURL ? { uri: user.photoURL } : defaultAvatar);
+        } else {
+          console.log("No such document!");
+        }
       } else {
         setCurrentUser(null);
         setImage(defaultAvatar);
@@ -149,6 +196,18 @@ const SettingsScreen = () => {
     }
   };
 
+  const updateUsername = async (newUsername) => {
+    const userRef = doc(firestore, "users", currentUser.uid);
+    try {
+      await updateDoc(userRef, {
+        username: newUsername,
+      });
+      setCurrentUser({ ...currentUser, displayName: newUsername });
+    } catch (error) {
+      console.error("Error updating username: ", error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
@@ -172,7 +231,12 @@ const SettingsScreen = () => {
             visible={showAccountModal}
             onRequestClose={toggleAccountModal}
           >
-            <ModalView toggle={toggleAccountModal} currentUser={currentUser} pickImage={pickImage} />
+            <ModalView
+              toggle={toggleAccountModal}
+              currentUser={currentUser}
+              pickImage={pickImage}
+              updateUsername={updateUsername}
+            />
           </Modal>
           <TouchableOpacity style={styles.option} onPress={handleLogout}>
             <MaterialCommunityIcons name="logout" size={24} color="#DAA520" style={styles.optionIcon} />
@@ -206,17 +270,20 @@ const styles = StyleSheet.create({
   optionIcon: {
     marginRight: 10,
   },
+
   optionText: {
     flex: 1,
     fontSize: 18,
     color: "#FFF",
   },
+
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22,
   },
+
   modalView: {
     margin: 20,
     backgroundColor: "white",
@@ -230,6 +297,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: 300,
   },
+
   avatarWrapper: {
     marginBottom: 20,
     alignItems: "center",
@@ -244,6 +312,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
   },
+
   userInfo: {
     width: "100%",
     marginBottom: 20,
@@ -251,18 +320,56 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 10,
   },
+
   userInfoText: {
     fontSize: 18,
     marginVertical: 5,
     marginLeft: 10,
   },
+
+  editButton: {
+    backgroundColor: "#F0AD4E",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop: 10,
+  },
+  editButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
   buttonClose: {
     backgroundColor: "#2196F3",
     borderRadius: 20,
     padding: 10,
     elevation: 2,
   },
+
   textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 8,
+    margin: 10,
+    width: 240,
+  },
+
+  saveButton: {
+    backgroundColor: "#5CB85C",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop: 10,
+  },
+
+  saveButtonText: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",

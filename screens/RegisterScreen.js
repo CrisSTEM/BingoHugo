@@ -15,7 +15,7 @@ import {
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { auth, createUserWithEmailAndPassword, firestore } from "../config/firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 const { width } = Dimensions.get("window");
 
@@ -55,15 +55,14 @@ function RegisterScreen({ onRegistrationSuccess, toggleScreen }) {
     }
     createUserWithEmailAndPassword(auth, email.trim(), password.trim())
       .then((userCredential) => {
-        const userRef = collection(firestore, "users");
-        addDoc(userRef, {
-          uid: userCredential.user.uid,
+        const userRef = doc(firestore, "users", userCredential.user.uid);
+        setDoc(userRef, {
           username: username,
           email: userCredential.user.email,
         })
           .then(() => {
             console.log("Usuario registrado en Firestore con éxito");
-            onRegistrationSuccess(); // Llamar al callback
+            onRegistrationSuccess();
           })
           .catch((error) => {
             console.error("Error al registrar usuario en Firestore:", error);
