@@ -16,8 +16,8 @@ import { Picker } from "@react-native-picker/picker";
 import { auth } from "../config/firebaseConfig";
 
 // Constants and Helpers
-const TOTAL_NUMBERS = 90;
-const numbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
+const TOTAL_NUMBERS = 91;
+const numbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i);
 const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
 const randomColor = () => {
   const hex = Math.floor(Math.random() * 0xffffff);
@@ -109,7 +109,7 @@ const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers, isAdmin
           color={color}
           isActive={activeNumbers.has(number)}
           onPress={toggleNumber}
-          size={size} // Tamaño reducido configurado en la parte del renderizado
+          size={30} // Tamaño reducido configurado en la parte del renderizado
           isAdmin={isAdmin}
         />
       )
@@ -331,7 +331,7 @@ const HomeScreen = () => {
             <NumberRows
               numbers={numbers.slice(0, 18)}
               color="#e57373"
-              size={40} // Nueva configuración de tamaño más pequeño
+              size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
@@ -339,7 +339,7 @@ const HomeScreen = () => {
             <NumberRows
               numbers={numbers.slice(18, 36)}
               color="#64b5f6"
-              size={40} // Nueva configuración de tamaño más pequeño
+              size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
@@ -347,7 +347,7 @@ const HomeScreen = () => {
             <NumberRows
               numbers={numbers.slice(36, 54)}
               color="#81c784"
-              size={40} // Nueva configuración de tamaño más pequeño
+              size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
@@ -355,7 +355,7 @@ const HomeScreen = () => {
             <NumberRows
               numbers={numbers.slice(54, 72)}
               color="#81c784"
-              size={40} // Nueva configuración de tamaño más pequeño
+              size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
@@ -363,7 +363,7 @@ const HomeScreen = () => {
             <NumberRows
               numbers={numbers.slice(72, 90)}
               color="#81c784"
-              size={40} // Nueva configuración de tamaño más pequeño
+              size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
@@ -407,12 +407,12 @@ const HomeScreen = () => {
             </Animated.View>
           )}
           keyExtractor={(item, index) => index.toString()}
-          numColumns={2} // Configurado para mostrar dos columnas
+          numColumns={2}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             justifyContent: "center",
             alignItems: "center",
-            padding: 1, // Reducir el padding aquí puede ayudar a juntarlos más
+            padding: 1,
           }}
         />
       </View>
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 200,
+    height: 250,
   },
   scrollableContent: {
     flex: 1,
