@@ -96,6 +96,7 @@ const HomeScreen = () => {
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
   const [quantity, setQuantity] = useState(1);
   const [bingoCards, setBingoCards] = useState([]);
+  const [winningStatus, setWinningStatus] = useState("");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -103,7 +104,36 @@ const HomeScreen = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  useEffect(() => {
+    checkForBingoOrLine();
+  }, [activeNumbers, bingoCards]);
 
+  const checkForBingoOrLine = () => {
+    bingoCards.forEach((card, cardIndex) => {
+      let lineCount = 0;
+      let bingoCount = 0;
+      card.forEach((row) => {
+        const isLine = row.every((cell) => activeNumbers.has(cell) || cell === null);
+        if (isLine) {
+          lineCount++;
+        }
+      });
+
+      const isBingo = card
+        .flat()
+        .filter((val) => val !== null)
+        .every((cell) => activeNumbers.has(cell));
+      if (isBingo) {
+        bingoCount = 15;
+      }
+
+      if (bingoCount === 15) {
+        setWinningStatus(`Cartón ${cardIndex + 1} ha hecho BINGO!`);
+      } else if (lineCount > 0) {
+        setWinningStatus(`Cartón ${cardIndex + 1} ha hecho ${lineCount} líneas!`);
+      }
+    });
+  };
   const toggleNumber = (number) => {
     const newActiveNumbers = new Set(activeNumbers);
     if (newActiveNumbers.has(number)) {
@@ -252,9 +282,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.userInfoContainer}>
-          <Text style={styles.userInfoText}>User: John Doe</Text>
-          <Text style={styles.userInfoText}>Time: {currentTime}</Text>
-          <Text style={styles.userInfoText}>BINGO</Text>
+          <Text style={styles.userInfoText}>{winningStatus}</Text>
         </View>
       </ScrollView>
       <View style={styles.fixedBingoCardSection}>
