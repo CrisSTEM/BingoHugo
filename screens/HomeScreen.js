@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   TextInput,
   Animated,
+  FlatList,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { auth } from "../config/firebaseConfig";
@@ -18,7 +19,10 @@ import { auth } from "../config/firebaseConfig";
 const TOTAL_NUMBERS = 90;
 const numbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
 const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
-
+const randomColor = () => {
+  const hex = Math.floor(Math.random() * 0xffffff);
+  return `#${hex.toString(16)}`;
+};
 // BingoBall component
 const BingoBall = ({ number, color, isActive, onPress, size, isAdmin }) => {
   const scale = new Animated.Value(1);
@@ -67,20 +71,25 @@ const BingoBall = ({ number, color, isActive, onPress, size, isAdmin }) => {
     </TouchableOpacity>
   );
 };
-const BingoCell = ({ number, isActive }) => {
+const BingoCell = ({ number, isActive, style }) => {
   return (
-    <View style={[styles.bingoCell, { backgroundColor: isActive ? "#ffcc00" : "rgba(255,255,255,0.9)" }]}>
+    <View style={[styles.bingoCell, style, { backgroundColor: isActive ? "#ffcc00" : "rgba(255,255,255,0.9)" }]}>
       <Text style={styles.bingoCellText}>{number}</Text>
     </View>
   );
 };
 // BingoCard component
-const BingoCard = ({ numbers, activeNumbers }) => (
-  <View style={styles.bingoCardContainer}>
+const BingoCard = ({ numbers, activeNumbers, style }) => (
+  <View style={[styles.bingoCardContainer, style]}>
     {numbers.map((row, rowIndex) => (
       <View key={rowIndex} style={styles.bingoRow}>
         {row.map((number, cellIndex) => (
-          <BingoCell key={cellIndex} number={number} isActive={activeNumbers.has(number)} />
+          <BingoCell
+            key={cellIndex}
+            number={number}
+            isActive={activeNumbers.has(number)}
+            style={{ backgroundColor: style.backgroundColor }}
+          />
         ))}
       </View>
     ))}
@@ -135,20 +144,21 @@ const HomeScreen = () => {
   }, [activeNumbers, bingoCards]);
 
   const checkForBingoOrLine = () => {
-    bingoCards.forEach((card, cardIndex) => {
+    bingoCards.forEach((cardInfo, cardIndex) => {
       let lineCount = 0;
       let bingoCount = 0;
-      card.forEach((row) => {
+      cardInfo.numbers.forEach((row) => {
         const isLine = row.every((cell) => activeNumbers.has(cell) || cell === null);
         if (isLine) {
           lineCount++;
         }
       });
 
-      const isBingo = card
+      const isBingo = cardInfo.numbers
         .flat()
         .filter((val) => val !== null)
         .every((cell) => activeNumbers.has(cell));
+
       if (isBingo) {
         bingoCount = 15;
       }
@@ -240,7 +250,15 @@ const HomeScreen = () => {
       }
     }
 
-    return cardNumbers;
+    const backgroundColor = randomColor();
+
+    return {
+      numbers: cardNumbers,
+      style: {
+        backgroundColor,
+        // Añade más propiedades de estilo si es necesario
+      },
+    };
   };
 
   const generateBingoCards = (quantity) => {
@@ -376,12 +394,27 @@ const HomeScreen = () => {
         </View>
       </ScrollView>
       <View style={styles.fixedBingoCardSection}>
-        <View style={styles.fixedBingoCardSection}></View>
-        <ScrollView vertical showsVerticalScrollIndicator={false}>
-          {bingoCards.map((cardNumbers, index) => (
-            <BingoCard key={index} numbers={cardNumbers} activeNumbers={activeNumbers} />
-          ))}
-        </ScrollView>
+        <FlatList
+          data={bingoCards}
+          renderItem={({ item, index }) => (
+            <Animated.View
+              style={{
+                transform: [{ scale: 0.55 }],
+                margin: -20,
+              }}
+            >
+              <BingoCard key={index} numbers={item.numbers} activeNumbers={activeNumbers} style={item.style} />
+            </Animated.View>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={2} // Configurado para mostrar dos columnas
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 1, // Reducir el padding aquí puede ayudar a juntarlos más
+          }}
+        />
       </View>
     </SafeAreaView>
   );
@@ -500,13 +533,15 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 12,
-    margin: 10,
+    margin: -5,
     padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 6,
+    marginRight: -50,
+    marginLeft: -60,
   },
   bingoRow: {
     flexDirection: "row",
