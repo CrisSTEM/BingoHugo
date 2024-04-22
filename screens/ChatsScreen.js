@@ -1,43 +1,24 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, SafeAreaView, Dimensions } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
 
 const { width } = Dimensions.get("window");
 
-const chats = [
-  {
-    id: "1",
-    name: "Jane Roe",
-    lastMessage: "Can you send the files?",
-    seen: true,
-    unreadCount: 0,
-    timestamp: "9:40 AM",
-    avatar: require("../assets/images/avatar.png"),
-  },
-  {
-    id: "2",
-    name: "John Smith",
-    lastMessage: "Sure, let's do that!",
-    seen: false,
-    unreadCount: 1,
-    timestamp: "Yesterday",
-    avatar: require("../assets/images/avatar_2.webp"),
-  },
-  {
-    id: "3",
-    name: "Alex Johnson",
-    lastMessage: "I'll call you later.",
-    seen: false,
-    unreadCount: 2,
-    timestamp: "Sunday",
-    avatar: require("../assets/images/Avatar_3.png"),
-  },
-];
-
-const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount }) => (
-  <TouchableOpacity style={styles.chatItem} onPress={() => console.log("Chat presionado")}>
+const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
+// Componente para cada item del chat
+const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount, navigation, id, userId }) => (
+  <TouchableOpacity
+    style={styles.chatItem}
+    onPress={() =>
+      navigation.navigate("ChatDetail", {
+        chatId: id,
+        userId,
+      })
+    }
+  >
     <Image source={avatar} style={styles.avatar} />
     <View style={styles.chatInfo}>
-      <Text style={[styles.chatName, unreadCount > 0 ? styles.chatNameActive : null]}>{name}</Text>
+      <Text style={[styles.chatName, unreadCount > 0 && styles.chatNameActive]}>{name}</Text>
       <Text style={styles.lastMessage} numberOfLines={1}>
         {lastMessage}
       </Text>
@@ -54,15 +35,51 @@ const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount }) =
   </TouchableOpacity>
 );
 
-const ChatsScreen = () => {
-  const renderItem = ({ item }) => <ChatItem {...item} />;
+// Pantalla principal de chats
+const ChatsScreen = ({ navigation }) => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Text>Cargando usuario o no autenticado...</Text>;
+  }
+
+  const chatWithAdmin = {
+    id: adminId,
+    name: "Admin Notifications",
+    lastMessage: "Notificaciones de la plataforma",
+    timestamp: "Just Now",
+    avatar: require("../assets/images/Avatar_3.png"),
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <FlatList data={chats} renderItem={renderItem} keyExtractor={(item) => item.id} />
+      <FlatList
+        data={[chatWithAdmin]}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.chatItem}
+            onPress={() =>
+              navigation.navigate("ChatDetail", {
+                chatId: item.id,
+                userId: user.uid,
+              })
+            }
+          >
+            <Image source={item.avatar} style={styles.avatar} />
+            <View style={styles.chatInfo}>
+              <Text style={styles.chatName}>{item.name}</Text>
+              <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+              <Text style={styles.timestamp}>{item.timestamp}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id}
+      />
     </SafeAreaView>
   );
 };
 
+// Estilos
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -75,27 +92,24 @@ const styles = StyleSheet.create({
   chatItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderBottomColor: "#DAA520",
     borderBottomWidth: 1,
     backgroundColor: "#000",
-    borderRadius: 12,
-    marginVertical: 5,
-    elevation: 2,
+    borderRadius: 8,
+    marginVertical: 4,
+    elevation: 3,
     shadowColor: "#DAA520",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 3.5,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 12,
   },
   chatInfo: {
     flex: 1,
@@ -103,13 +117,13 @@ const styles = StyleSheet.create({
   },
   chatName: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 17,
     color: "#FFF",
   },
   lastMessage: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#c7c7c7",
-    marginTop: 4,
+    marginTop: 3,
   },
   rightSection: {
     alignItems: "flex-end",
