@@ -53,16 +53,20 @@ const BingoBall = ({ number, color, isActive, onPress, size }) => {
     </TouchableOpacity>
   );
 };
-
+const BingoCell = ({ number, isActive }) => {
+  return (
+    <View style={[styles.bingoCell, { backgroundColor: isActive ? "#ffcc00" : "rgba(255,255,255,0.9)" }]}>
+      <Text style={styles.bingoCellText}>{number}</Text>
+    </View>
+  );
+};
 // BingoCard component
-const BingoCard = ({ numbers }) => (
+const BingoCard = ({ numbers, activeNumbers }) => (
   <View style={styles.bingoCardContainer}>
     {numbers.map((row, rowIndex) => (
       <View key={rowIndex} style={styles.bingoRow}>
         {row.map((number, cellIndex) => (
-          <Text key={cellIndex} style={styles.bingoCell}>
-            {number}
-          </Text>
+          <BingoCell key={cellIndex} number={number} isActive={activeNumbers.has(number)} />
         ))}
       </View>
     ))}
@@ -257,7 +261,7 @@ const HomeScreen = () => {
         <View style={styles.fixedBingoCardSection}></View>
         <ScrollView vertical showsVerticalScrollIndicator={false}>
           {bingoCards.map((cardNumbers, index) => (
-            <BingoCard key={index} numbers={cardNumbers} />
+            <BingoCard key={index} numbers={cardNumbers} activeNumbers={activeNumbers} />
           ))}
         </ScrollView>
       </View>
@@ -429,6 +433,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     shadowOffset: { width: 1, height: 1 },
     elevation: 4,
+  },
+  bingoCell: {
+    width: 36,
+    height: 36,
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.9)",
   },
 });
 
