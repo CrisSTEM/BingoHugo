@@ -116,7 +116,13 @@ const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers, isAdmin
     )}
   </View>
 );
-
+const ProgressBar = ({ progress }) => {
+  return (
+    <View style={styles.progressBarContainer}>
+      <View style={[styles.progressBar, { width: `${progress}%` }]} />
+    </View>
+  );
+};
 // HomeScreen component
 const HomeScreen = () => {
   const [activeNumbers, setActiveNumbers] = useState(new Set());
@@ -128,7 +134,7 @@ const HomeScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rules, setRules] = useState({ lines: 1, bingos: 1 });
   const [isAdmin, setIsAdmin] = useState(false);
-
+  const [progress, setProgress] = useState(0); // Inicialmente en 0%
   useEffect(() => {
     const userId = auth.currentUser.uid;
     setIsAdmin(userId === adminId);
@@ -164,9 +170,9 @@ const HomeScreen = () => {
       }
 
       if (bingoCount === 15) {
-        setWinningStatus(`Cartón ${cardIndex + 1} ha hecho BINGO!`);
+        setWinningStatus(`Pepito ha hecho BINGO!`);
       } else if (lineCount > 0) {
-        setWinningStatus(`Cartón ${cardIndex + 1} ha hecho ${lineCount} líneas!`);
+        setWinningStatus(`Pepito ha hecho ${lineCount} líneas!`);
       }
     });
   };
@@ -319,7 +325,12 @@ const HomeScreen = () => {
                 value={rules.bingos.toString()}
                 onChangeText={(text) => handleRulesChange("bingos", parseInt(text) || 0)}
               />
-
+              <TextInput
+                style={styles.modalInput}
+                keyboardType="number-pad"
+                value={progress.toString()}
+                onChangeText={(text) => setProgress(Number(text))}
+              />
               <TouchableOpacity style={styles.okButton} onPress={() => setIsModalVisible(!isModalVisible)}>
                 <Text style={styles.buttonText}>OK</Text>
               </TouchableOpacity>
@@ -391,6 +402,7 @@ const HomeScreen = () => {
         </View>
         <View style={styles.userInfoContainer}>
           <Text style={styles.userInfoText}>{winningStatus}</Text>
+          <ProgressBar progress={progress} />
         </View>
       </ScrollView>
       <View style={styles.fixedBingoCardSection}>
@@ -471,10 +483,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
   },
-  userInfoText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#DAA520",
+  userInfoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+    alignItems: "center",
   },
   bottomSection: {
     flexDirection: "row",
@@ -659,6 +672,25 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  userInfoText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#DAA520",
+    flex: 1,
+  },
+
+  progressBarContainer: {
+    height: 20,
+    width: "50%",
+    backgroundColor: "#e0e0e0",
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  progressBar: {
+    height: "100%",
+    backgroundColor: "#76FF03",
+    borderRadius: 10,
   },
 });
 
