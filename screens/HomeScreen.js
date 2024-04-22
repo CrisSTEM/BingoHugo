@@ -90,17 +90,21 @@ const BingoCard = ({ numbers, activeNumbers }) => (
 // NumberRows component
 const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers, isAdmin }) => (
   <View style={styles.numberRow}>
-    {numbers.map((number) => (
-      <BingoBall
-        key={number}
-        number={number}
-        color={color}
-        isActive={activeNumbers.has(number)}
-        onPress={toggleNumber}
-        size={size}
-        isAdmin={isAdmin}
-      />
-    ))}
+    {numbers.map(
+      (
+        number // Asegurarse de que la slicción del arreglo numbers se haga correctamente en el renderizado padre para 18 items
+      ) => (
+        <BingoBall
+          key={number}
+          number={number}
+          color={color}
+          isActive={activeNumbers.has(number)}
+          onPress={toggleNumber}
+          size={size} // Tamaño reducido configurado en la parte del renderizado
+          isAdmin={isAdmin}
+        />
+      )
+    )}
   </View>
 );
 
@@ -307,28 +311,44 @@ const HomeScreen = () => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.horizontalContainer}>
             <NumberRows
-              numbers={numbers.slice(0, 30)}
+              numbers={numbers.slice(0, 18)}
               color="#e57373"
-              size={50}
+              size={40} // Nueva configuración de tamaño más pequeño
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
-              isAdmin={isAdmin} // Pasa la prop isAdmin
+              isAdmin={isAdmin}
             />
             <NumberRows
-              numbers={numbers.slice(30, 60)}
+              numbers={numbers.slice(18, 36)}
               color="#64b5f6"
-              size={50}
+              size={40} // Nueva configuración de tamaño más pequeño
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
-              isAdmin={isAdmin} // Pasa la prop isAdmin
+              isAdmin={isAdmin}
             />
             <NumberRows
-              numbers={numbers.slice(60, 90)}
+              numbers={numbers.slice(36, 54)}
               color="#81c784"
-              size={50}
+              size={40} // Nueva configuración de tamaño más pequeño
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
-              isAdmin={isAdmin} // Pasa la prop isAdmin
+              isAdmin={isAdmin}
+            />
+            <NumberRows
+              numbers={numbers.slice(54, 72)}
+              color="#81c784"
+              size={40} // Nueva configuración de tamaño más pequeño
+              toggleNumber={toggleNumber}
+              activeNumbers={activeNumbers}
+              isAdmin={isAdmin}
+            />
+            <NumberRows
+              numbers={numbers.slice(72, 90)}
+              color="#81c784"
+              size={40} // Nueva configuración de tamaño más pequeño
+              toggleNumber={toggleNumber}
+              activeNumbers={activeNumbers}
+              isAdmin={isAdmin}
             />
           </View>
         </ScrollView>
@@ -511,7 +531,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 285,
+    height: 200,
   },
   scrollableContent: {
     flex: 1,
