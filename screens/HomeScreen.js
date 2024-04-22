@@ -12,7 +12,6 @@ import {
   Animated,
   FlatList,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { auth } from "../config/firebaseConfig";
 
 // Constants and Helpers
@@ -99,21 +98,17 @@ const BingoCard = ({ numbers, activeNumbers, style }) => (
 // NumberRows component
 const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers, isAdmin }) => (
   <View style={styles.numberRow}>
-    {numbers.map(
-      (
-        number // Asegurarse de que la slicción del arreglo numbers se haga correctamente en el renderizado padre para 18 items
-      ) => (
-        <BingoBall
-          key={number}
-          number={number}
-          color={color}
-          isActive={activeNumbers.has(number)}
-          onPress={toggleNumber}
-          size={30} // Tamaño reducido configurado en la parte del renderizado
-          isAdmin={isAdmin}
-        />
-      )
-    )}
+    {numbers.map((number) => (
+      <BingoBall
+        key={number}
+        number={number}
+        color={color}
+        isActive={activeNumbers.has(number)}
+        onPress={toggleNumber}
+        size={30}
+        isAdmin={isAdmin}
+      />
+    ))}
   </View>
 );
 const ProgressBar = ({ progress }) => {
@@ -134,7 +129,7 @@ const HomeScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rules, setRules] = useState({ lines: 1, bingos: 1 });
   const [isAdmin, setIsAdmin] = useState(false);
-  const [progress, setProgress] = useState(0); // Inicialmente en 0%
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
     const userId = auth.currentUser.uid;
     setIsAdmin(userId === adminId);
@@ -325,6 +320,7 @@ const HomeScreen = () => {
                 value={rules.bingos.toString()}
                 onChangeText={(text) => handleRulesChange("bingos", parseInt(text) || 0)}
               />
+              <Text>Progreso de la barra</Text>
               <TextInput
                 style={styles.modalInput}
                 keyboardType="number-pad"

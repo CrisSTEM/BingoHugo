@@ -13,7 +13,6 @@ export const getOrCreateChat = async (userId, otherUserId) => {
 
   const querySnapshot = await getDocs(q);
   if (querySnapshot.empty) {
-    // No existing chat, create a new one
     const chatData = {
       userIds: [userId, otherUserId],
       createdAt: serverTimestamp(),
@@ -21,9 +20,9 @@ export const getOrCreateChat = async (userId, otherUserId) => {
       lastMessageTimestamp: serverTimestamp(),
     };
     const chatDocRef = await addDoc(chatsRef, chatData);
-    return chatDocRef.id; // Return the new chat ID
+    return chatDocRef.id;
   } else {
-    return querySnapshot.docs[0].id; // Return existing chat ID
+    return querySnapshot.docs[0].id;
   }
 };
 
@@ -58,7 +57,7 @@ export const loadMessages = (chatId, limit = 20) => {
     querySnapshot.forEach((doc) => {
       messages.push({ id: doc.id, ...doc.data() });
     });
-    return messages.reverse(); // Reverse to show oldest messages first
+    return messages.reverse();
   });
 };
 export const listenForMessages = (chatId, callback) => {
@@ -70,7 +69,7 @@ export const listenForMessages = (chatId, callback) => {
     querySnapshot.forEach((doc) => {
       messages.push({ id: doc.id, ...doc.data() });
     });
-    callback(messages.reverse()); // Reverse to show oldest messages first
+    callback(messages.reverse());
   });
 
   return unsubscribe;

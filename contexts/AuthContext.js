@@ -16,16 +16,12 @@ export const AuthProvider = ({ children }) => {
         setUser({
           uid: currentUser.uid,
           email: currentUser.email,
-          // puedes añadir más detalles aquí si es necesario
         });
-        // Aquí también podrías establecer isAuthenticated a true
       } else {
         setUser(null);
-        // Y establecer isAuthenticated a false
       }
     });
 
-    // Se desuscribe a la escucha cuando el componente se desmonta
     return () => unsubscribe();
   }, []);
 

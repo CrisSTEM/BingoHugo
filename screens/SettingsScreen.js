@@ -39,9 +39,8 @@ const SettingsOption = ({ title, iconName, iconType, onPress }) => {
 
 const ModalView = ({ toggle, currentUser, pickImage, updateUsername }) => {
   const [editing, setEditing] = useState(false);
-  const [newUsername, setNewUsername] = useState(currentUser?.displayName || ""); // use optional chaining
+  const [newUsername, setNewUsername] = useState(currentUser?.displayName || "");
 
-  // Return an empty component or some loading indicator if currentUser is not set
   if (!currentUser) {
     return (
       <View style={styles.centeredView}>
