@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, View, ScrollView, Text, TouchableOpacity, TextInput, Animated } from "react-native";
+import {
+  Modal,
+  Button,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Animated,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { auth } from "../config/firebaseConfig";
 
 // Constants and Helpers
 const TOTAL_NUMBERS = 90;
 const numbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
+const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
 
 // BingoBall component
-const BingoBall = ({ number, color, isActive, onPress, size }) => {
+const BingoBall = ({ number, color, isActive, onPress, size, isAdmin }) => {
   const scale = new Animated.Value(1);
 
   const handlePressIn = () => {
@@ -22,16 +36,16 @@ const BingoBall = ({ number, color, isActive, onPress, size }) => {
   };
 
   return (
-    <TouchableOpacity onPress={() => onPress(number)} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+    <TouchableOpacity
+      onPress={() => isAdmin && onPress(number)}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={!isAdmin}
+    >
       <Animated.View
         style={[
           styles.bingoBallContainer,
-          {
-            transform: [{ scale }],
-            shadowColor: isActive ? color : "#ccc",
-            width: size,
-            height: size,
-          },
+          { transform: [{ scale }], shadowColor: isActive ? color : "#ccc", width: size, height: size },
         ]}
       >
         <View
@@ -74,7 +88,7 @@ const BingoCard = ({ numbers, activeNumbers }) => (
 );
 
 // NumberRows component
-const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers }) => (
+const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers, isAdmin }) => (
   <View style={styles.numberRow}>
     {numbers.map((number) => (
       <BingoBall
@@ -84,6 +98,7 @@ const NumberRows = ({ numbers, color, size, toggleNumber, activeNumbers }) => (
         isActive={activeNumbers.has(number)}
         onPress={toggleNumber}
         size={size}
+        isAdmin={isAdmin}
       />
     ))}
   </View>
@@ -97,7 +112,14 @@ const HomeScreen = () => {
   const [quantity, setQuantity] = useState(1);
   const [bingoCards, setBingoCards] = useState([]);
   const [winningStatus, setWinningStatus] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [rules, setRules] = useState({ lines: 1, bingos: 1 });
+  const [isAdmin, setIsAdmin] = useState(false);
 
+  useEffect(() => {
+    const userId = auth.currentUser.uid;
+    setIsAdmin(userId === adminId);
+  }, []);
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString());
@@ -133,6 +155,10 @@ const HomeScreen = () => {
         setWinningStatus(`Cartón ${cardIndex + 1} ha hecho ${lineCount} líneas!`);
       }
     });
+  };
+
+  const handleRulesChange = (type, value) => {
+    setRules((prevRules) => ({ ...prevRules, [type]: value }));
   };
   const toggleNumber = (number) => {
     const newActiveNumbers = new Set(activeNumbers);
@@ -236,7 +262,48 @@ const HomeScreen = () => {
               <BingoBall key={number} number={number} color="#ccc" isActive={true} onPress={() => {}} size={30} />
             ))}
           </ScrollView>
+          {isAdmin && (
+            <TouchableOpacity style={styles.openButton} onPress={() => setIsModalVisible(true)}>
+              <Text style={styles.openButtonText}>Establecer Reglas</Text>
+            </TouchableOpacity>
+          )}
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => {
+            setIsModalVisible(!isModalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Selecciona las Reglas</Text>
+
+              {/* Entrada para cantidad de líneas */}
+              <Text>Cantidad de Líneas para Ganar</Text>
+              <TextInput
+                style={styles.modalInput}
+                keyboardType="number-pad"
+                value={rules.lines.toString()}
+                onChangeText={(text) => handleRulesChange("lines", parseInt(text) || 0)}
+              />
+
+              {/* Entrada para cantidad de Bingos */}
+              <Text>Cantidad de Bingos para Ganar</Text>
+              <TextInput
+                style={styles.modalInput}
+                keyboardType="number-pad"
+                value={rules.bingos.toString()}
+                onChangeText={(text) => handleRulesChange("bingos", parseInt(text) || 0)}
+              />
+
+              <TouchableOpacity style={styles.okButton} onPress={() => setIsModalVisible(!isModalVisible)}>
+                <Text style={styles.buttonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.horizontalContainer}>
             <NumberRows
@@ -245,6 +312,7 @@ const HomeScreen = () => {
               size={50}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
+              isAdmin={isAdmin} // Pasa la prop isAdmin
             />
             <NumberRows
               numbers={numbers.slice(30, 60)}
@@ -252,6 +320,7 @@ const HomeScreen = () => {
               size={50}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
+              isAdmin={isAdmin} // Pasa la prop isAdmin
             />
             <NumberRows
               numbers={numbers.slice(60, 90)}
@@ -259,6 +328,7 @@ const HomeScreen = () => {
               size={50}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
+              isAdmin={isAdmin} // Pasa la prop isAdmin
             />
           </View>
         </ScrollView>
@@ -471,6 +541,69 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     backgroundColor: "rgba(255,255,255,0.9)",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "white",
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    padding: 35,
+    alignItems: "stretch",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  modalInput: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginTop: 10,
+    marginBottom: 20,
+    borderRadius: 5,
+    paddingLeft: 10,
+  },
+  okButton: {
+    backgroundColor: "#2196F3",
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  openButton: {
+    backgroundColor: "#2196F3",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    alignSelf: "center",
+    marginTop: 20,
+  },
+  openButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
