@@ -336,40 +336,56 @@ const HomeScreen = () => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.horizontalContainer}>
             <NumberRows
-              numbers={numbers.slice(0, 18)}
-              color="#e57373"
+              numbers={numbers.slice(0, 13)}
+              color="#e57373" // Rojo
               size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
             />
             <NumberRows
-              numbers={numbers.slice(18, 36)}
-              color="#64b5f6"
+              numbers={numbers.slice(13, 26)}
+              color="#64b5f6" // Azul
               size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
             />
             <NumberRows
-              numbers={numbers.slice(36, 54)}
-              color="#81c784"
+              numbers={numbers.slice(26, 39)}
+              color="#ffeb3b" // Amarillo
               size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
             />
             <NumberRows
-              numbers={numbers.slice(54, 72)}
-              color="#81c784"
+              numbers={numbers.slice(39, 52)}
+              color="#4caf50" // Verde
               size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
               isAdmin={isAdmin}
             />
             <NumberRows
-              numbers={numbers.slice(72, 90)}
-              color="#81c784"
+              numbers={numbers.slice(52, 65)}
+              color="#f44336" // Rojo Oscuro
+              size={30}
+              toggleNumber={toggleNumber}
+              activeNumbers={activeNumbers}
+              isAdmin={isAdmin}
+            />
+            <NumberRows
+              numbers={numbers.slice(65, 78)}
+              color="#9c27b0" // Púrpura
+              size={30}
+              toggleNumber={toggleNumber}
+              activeNumbers={activeNumbers}
+              isAdmin={isAdmin}
+            />
+            <NumberRows
+              numbers={numbers.slice(78, 91)}
+              color="#3f51b5" // Indigo
               size={30}
               toggleNumber={toggleNumber}
               activeNumbers={activeNumbers}
