@@ -126,7 +126,6 @@ const HomeScreen = () => {
             ))}
           </View>
         </ScrollView>
-
         <View style={styles.bottomSection}>
           <View style={styles.buttonWrapper}>
             <TouchableOpacity style={styles.button} onPress={() => handleQuantityChange("-")}>
@@ -146,11 +145,8 @@ const HomeScreen = () => {
             <Text style={styles.generateButtonText}>Comprar cartones</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.userInfoContainer}>
-          <Text style={styles.userInfoText}>{winningStatus}</Text>
-          <ProgressBar progress={progress} />
-        </View>
       </ScrollView>
+
       <View style={styles.fixedBingoCardSection}>
         <FlatList
           data={bingoCards}
@@ -164,6 +160,10 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ justifyContent: "center", alignItems: "center", padding: 1 }}
         />
+      </View>
+
+      <View style={styles.progressOverlayContainer}>
+        <ProgressBar progress={progress} />
       </View>
     </SafeAreaView>
   );
