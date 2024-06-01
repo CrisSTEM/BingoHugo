@@ -8,7 +8,7 @@ const ChatDetailScreen = ({ route }) => {
   const [text, setText] = useState("");
   const { chatId, userId } = route.params;
 
-  const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
+  const adminId = "M39g19sRQ5Qj6vpPtPHdjHOChjG2";
   const isUserAdmin = userId === adminId;
 
   useEffect(() => {

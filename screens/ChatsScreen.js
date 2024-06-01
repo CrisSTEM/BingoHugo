@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const { width } = Dimensions.get("window");
 
-const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
+const adminId = "M39g19sRQ5Qj6vpPtPHdjHOChjG2";
 // Componente para cada item del chat
 const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount, navigation, id, userId }) => (
   <TouchableOpacity

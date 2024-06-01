@@ -17,7 +17,7 @@ import { auth } from "../config/firebaseConfig";
 // Constants and Helpers
 const TOTAL_NUMBERS = 91;
 const numbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i);
-const adminId = "403JDsD1jsY2zJogoREPI3xpoMc2";
+const adminId = "M39g19sRQ5Qj6vpPtPHdjHOChjG2";
 const randomColor = () => {
   const hex = Math.floor(Math.random() * 0xffffff);
   return `#${hex.toString(16)}`;
