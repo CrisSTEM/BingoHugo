@@ -14,10 +14,11 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   bingoBallContainer: {
-    margin: 4,
-    elevation: 8, // Aumenta la elevación para una mejor sombra
-    shadowOpacity: 0.5, // Aumenta la opacidad de la sombra
-    shadowRadius: 5, // Aumenta el radio de la sombra para una apariencia más suave
+    marginVertical: 2,
+    marginHorizontal: -0.25,
+    elevation: 8,
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
     shadowOffset: { width: 2, height: 2 },
   },
   bingoBall: {
@@ -31,8 +32,8 @@ const styles = StyleSheet.create({
   },
   bingoBallText: {
     fontSize: 14,
-    fontWeight: "bold", // Texto en negrita
-    color: "#000", // Texto negro
+    fontWeight: "bold",
+    color: "#000",
   },
   currentAndPastContainer: {
     flexDirection: "row",
@@ -45,11 +46,6 @@ const styles = StyleSheet.create({
   pastNumbersContainer: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  userInfoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
   },
   userInfoContainer: {
     flexDirection: "row",
@@ -185,41 +181,61 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalView: {
-    flex: 1,
-    width: "100%",
+    width: "90%",
     backgroundColor: "white",
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    padding: 35,
-    alignItems: "stretch",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  modalText: {
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
+  },
+  modalContent: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  modalLabel: {
+    fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 10,
+    color: "#000",
   },
   modalInput: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 20,
     borderRadius: 5,
-    paddingLeft: 10,
+    padding: 10,
+    marginBottom: 20,
+    fontSize: 16,
+  },
+  progressAdjustmentContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  modalPercentage: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "center",
+    marginBottom: 20,
   },
   okButton: {
     backgroundColor: "#2196F3",
     borderRadius: 10,
-    padding: 10,
+    padding: 15,
     elevation: 2,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
   },
   openButton: {
     backgroundColor: "#2196F3",
@@ -227,10 +243,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     alignSelf: "center",
@@ -247,18 +260,69 @@ const styles = StyleSheet.create({
     color: "#DAA520",
     flex: 1,
   },
-
-  progressBarContainer: {
-    height: 20,
-    width: "50%",
-    backgroundColor: "#e0e0e0",
+  progressValueContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
+  },
+  progressValueText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  adjustButton: {
+    width: 50,
+    height: 40,
+    backgroundColor: "#2196F3",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
+    marginHorizontal: 5,
+    elevation: 2,
+  },
+  quickAdjustmentContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  progressBarContainer: {
+    width: "100%",
+    height: 25,
+    backgroundColor: "#f0f0f0", // Color más suave para el fondo
+    borderRadius: 12,
     overflow: "hidden",
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 5,
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#76FF03",
-    borderRadius: 10,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#4CAF50",
+  },
+  progressBarGradient: {
+    flex: 1,
+    borderRadius: 12,
+    backgroundColor: "#4CAF50",
+  },
+  progressTextContainer: {
+    position: "absolute",
+    right: 10,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  progressText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    textShadowColor: "transparent",
   },
 });
 
