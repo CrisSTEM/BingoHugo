@@ -1,154 +1,116 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, SafeAreaView, Dimensions } from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, StyleSheet, FlatList, Text, View, Dimensions, ActivityIndicator } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
+import { listenForMessages, markMessagesAsSeen } from "../services/ChatService";
+import ChatItem from "../components/ChatItem";
 
 const { width } = Dimensions.get("window");
 
 const adminId = "M39g19sRQ5Qj6vpPtPHdjHOChjG2";
-// Componente para cada item del chat
-const ChatItem = ({ name, lastMessage, timestamp, avatar, seen, unreadCount, navigation, id, userId }) => (
-  <TouchableOpacity
-    style={styles.chatItem}
-    onPress={() =>
-      navigation.navigate("ChatDetail", {
-        chatId: id,
-        userId,
-      })
-    }
-  >
-    <Image source={avatar} style={styles.avatar} />
-    <View style={styles.chatInfo}>
-      <Text style={[styles.chatName, unreadCount > 0 && styles.chatNameActive]}>{name}</Text>
-      <Text style={styles.lastMessage} numberOfLines={1}>
-        {lastMessage}
-      </Text>
-    </View>
-    <View style={styles.rightSection}>
-      <Text style={styles.timestamp}>{timestamp}</Text>
-      {unreadCount > 0 && (
-        <View style={styles.unreadBadge}>
-          <Text style={styles.unreadCountText}>{unreadCount}</Text>
-        </View>
-      )}
-      {seen && !unreadCount && <Image source={require("../assets/images/check.png")} style={styles.seenIcon} />}
-    </View>
-  </TouchableOpacity>
-);
 
-// Pantalla principal de chats
 const ChatsScreen = ({ navigation }) => {
   const { user } = useAuth();
+  const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!user) {
-    return <Text>Cargando usuario o no autenticado...</Text>;
+  useEffect(() => {
+    if (!user) return;
+
+    const listener = listenForMessages(adminId, (messages) => {
+      const chatData = {
+        id: adminId,
+        name: "Admin Notifications",
+        lastMessage: messages.length > 0 ? messages[0].text : "No messages yet",
+        timestamp:
+          messages.length > 0 && messages[0].timestamp
+            ? new Date(messages[0].timestamp.seconds * 1000).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "Just Now",
+        avatar: require("../assets/images/Avatar_3.png"),
+      };
+      setChats([chatData]);
+      setLoading(false);
+    });
+
+    return () => listener();
+  }, [user]);
+
+  if (loading) {
+    return <ActivityIndicator style={styles.loading} size="large" color="#DAA520" />;
   }
 
-  const chatWithAdmin = {
-    id: adminId,
-    name: "Admin Notifications",
-    lastMessage: "Notificaciones de la plataforma",
-    timestamp: "Just Now",
-    avatar: require("../assets/images/Avatar_3.png"),
+  const handleChatPress = async (chatId, userId) => {
+    try {
+      await markMessagesAsSeen(chatId, user.uid);
+      navigation.navigate("ChatDetail", {
+        chatId,
+        userId,
+      });
+    } catch (err) {
+      console.error("Error navigating to chat detail: ", err);
+      setError("There was an issue navigating to chat detail. Please try again later.");
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Notifications</Text>
+      </View>
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <FlatList
-        data={[chatWithAdmin]}
+        data={chats}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.chatItem}
-            onPress={() =>
-              navigation.navigate("ChatDetail", {
-                chatId: item.id,
-                userId: user.uid,
-              })
-            }
-          >
-            <Image source={item.avatar} style={styles.avatar} />
-            <View style={styles.chatInfo}>
-              <Text style={styles.chatName}>{item.name}</Text>
-              <Text style={styles.lastMessage}>{item.lastMessage}</Text>
-              <Text style={styles.timestamp}>{item.timestamp}</Text>
-            </View>
-          </TouchableOpacity>
+          <ChatItem
+            name={item.name}
+            lastMessage={item.lastMessage}
+            timestamp={item.timestamp}
+            avatar={item.avatar}
+            onPress={() => handleChatPress(item.id, user.uid)}
+          />
         )}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.flatListContent}
       />
     </SafeAreaView>
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "rgba(20, 20, 20, 0.85)",
+    backgroundColor: "#1F1F1F",
     width,
   },
-  chatNameActive: {
-    color: "#DAA520",
-  },
-  chatItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomColor: "#DAA520",
-    borderBottomWidth: 1,
-    backgroundColor: "#000",
-    borderRadius: 8,
-    marginVertical: 4,
-    elevation: 3,
-    shadowColor: "#DAA520",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    marginRight: 12,
-  },
-  chatInfo: {
+  loading: {
     flex: 1,
-    marginRight: 10,
-  },
-  chatName: {
-    fontWeight: "bold",
-    fontSize: 17,
-    color: "#FFF",
-  },
-  lastMessage: {
-    fontSize: 15,
-    color: "#c7c7c7",
-    marginTop: 3,
-  },
-  rightSection: {
-    alignItems: "flex-end",
-  },
-  timestamp: {
-    fontSize: 12,
-    color: "#b0b0b0",
-  },
-  unreadBadge: {
-    marginTop: 4,
-    backgroundColor: "#ff3b30",
-    borderRadius: 10,
-    width: 20,
-    height: 20,
     justifyContent: "center",
     alignItems: "center",
   },
-  unreadCountText: {
-    color: "#fff",
-    fontSize: 12,
+  header: {
+    padding: 16,
+    backgroundColor: "#2C2C2C",
+    borderBottomWidth: 1,
+    borderBottomColor: "#444",
+    alignItems: "center",
   },
-  seenIcon: {
-    width: 20,
-    height: 20,
-    marginTop: 4,
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#FFF",
+    textAlign: "center",
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  flatListContent: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
 });
 

@@ -17,8 +17,10 @@ export const AuthProvider = ({ children }) => {
           uid: currentUser.uid,
           email: currentUser.email,
         });
+        setIsAuthenticated(true);
       } else {
         setUser(null);
+        setIsAuthenticated(false);
       }
     });
 

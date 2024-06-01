@@ -15,10 +15,16 @@ const firebaseConfig = {
   measurementId: "G-32VDSNPZQK",
 };
 
+// Inicializa la aplicación de Firebase
 const app = initializeApp(firebaseConfig);
+
+// Inicializa el auth con la persistencia de React Native
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
+
+// Inicializa otros servicios
 const storage = getStorage(app);
 const firestore = getFirestore(app);
+
 export { auth, createUserWithEmailAndPassword, storage, signOut, firestore };

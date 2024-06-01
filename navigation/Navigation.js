@@ -29,18 +29,17 @@ function Navigation() {
         headerTitleAlign: "center",
         tabBarIcon: ({ color, size }) => {
           const icons = {
-            Home: "home",
+            Home: "home-circle",
             Messages: "message",
-            Account: "account",
+            Account: "account-circle",
           };
           return <MaterialCommunityIcons name={icons[route.name]} size={size} color={color} />;
         },
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: "#DAA520",
         tabBarInactiveTintColor: "gray",
-        tabBarLabelStyle: {
-          fontWeight: "bold",
-        },
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarShowLabel: false,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -49,18 +48,19 @@ function Navigation() {
     </Tab.Navigator>
   );
 }
+
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: "#000",
-    borderTopColor: "#e0e0e0",
+    borderTopColor: "#000",
     borderTopWidth: 1,
-    shadowOffset: { height: -2, width: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    height: 50,
+    height: 60,
     justifyContent: "space-evenly",
     alignItems: "center",
+  },
+  tabBarLabel: {
+    fontWeight: "600",
+    fontSize: 12,
   },
   headerStyle: {
     backgroundColor: "#000",
@@ -68,11 +68,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    borderBottomWidth: 0,
   },
   headerTitleStyle: {
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 22,
     color: "#DAA520",
   },
 });
+
 export default Navigation;

@@ -13,7 +13,6 @@ import {
   Easing,
 } from "react-native";
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-
 import { auth, createUserWithEmailAndPassword, firestore } from "../config/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -46,11 +45,11 @@ function RegisterScreen({ onRegistrationSuccess, toggleScreen }) {
 
   const handleRegister = () => {
     if (username.trim() === "" || email.trim() === "" || password.trim() === "") {
-      Alert.alert("Error", "All fields are required.");
+      Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+      Alert.alert("Error", "Las contraseñas no coinciden.");
       return;
     }
     createUserWithEmailAndPassword(auth, email.trim(), password.trim())
@@ -70,6 +69,7 @@ function RegisterScreen({ onRegistrationSuccess, toggleScreen }) {
       })
       .catch((error) => {
         console.error("Error al registrar usuario:", error);
+        Alert.alert("Registro Fallido", error.message);
       });
   };
 
@@ -80,54 +80,54 @@ function RegisterScreen({ onRegistrationSuccess, toggleScreen }) {
           <MaterialCommunityIcons name="account-plus-outline" size={50} color="#DAA520" />
           <Text style={styles.title}>Registrate en Hugo Bingo!</Text>
           <View style={styles.inputContainer}>
-            <AntDesign name="user" size={20} color="#FFD700" style={styles.iconStyle} />
+            <AntDesign name="user" size={24} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setUsername}
               value={username}
-              placeholder="Username"
+              placeholder="Nombre de Usuario"
               placeholderTextColor="#c7c7c7"
             />
           </View>
           <View style={styles.inputContainer}>
-            <MaterialCommunityIcons name="email-outline" size={20} color="#FFD700" style={styles.iconStyle} />
+            <MaterialCommunityIcons name="email-outline" size={24} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setEmail}
               value={email}
-              placeholder="Email"
+              placeholder="Correo Electrónico"
               keyboardType="email-address"
               placeholderTextColor="#c7c7c7"
             />
           </View>
           <View style={styles.inputContainer}>
-            <FontAwesome name="lock" size={20} color="#FFD700" style={styles.iconStyle} />
+            <FontAwesome name="lock" size={24} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setPassword}
               value={password}
-              placeholder="Password"
+              placeholder="Contraseña"
               secureTextEntry
               placeholderTextColor="#c7c7c7"
             />
           </View>
           <View style={styles.inputContainer}>
-            <FontAwesome name="lock" size={20} color="#FFD700" style={styles.iconStyle} />
+            <FontAwesome name="lock" size={24} color="#FFD700" style={styles.iconStyle} />
             <TextInput
               style={styles.input}
               onChangeText={setConfirmPassword}
               value={confirmPassword}
-              placeholder="Confirm Password"
+              placeholder="Confirmar Contraseña"
               secureTextEntry
               placeholderTextColor="#c7c7c7"
             />
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Register</Text>
+              <Text style={styles.buttonText}>Registrarse</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.loginButton} onPress={toggleScreen}>
-              <Text style={styles.buttonText}>Back to Login</Text>
+              <Text style={styles.buttonText}>Volver al inicio de sesión</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -153,26 +153,28 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     backgroundColor: "rgba(20, 20, 20, 0.85)",
-    borderRadius: 10,
+    borderRadius: 20,
     elevation: 10,
     shadowColor: "#DAA520",
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#DAA520",
     marginBottom: 20,
+    textAlign: "center",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 15,
     borderWidth: 2,
     borderColor: "#DAA520",
     borderRadius: 10,
-    backgroundColor: "#000",
-    paddingVertical: 5,
+    backgroundColor: "#333",
+    paddingVertical: 8,
     paddingHorizontal: 15,
+    width: "100%",
   },
   iconStyle: {
     marginRight: 10,
@@ -187,27 +189,34 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     width: "100%",
-    paddingHorizontal: 20,
+    marginTop: 20,
   },
   loginButton: {
-    paddingVertical: 12,
+    paddingVertical: 15,
     flex: 1,
-    marginRight: 10,
     borderRadius: 20,
     backgroundColor: "#800000",
     alignItems: "center",
+    elevation: 5,
+    marginRight: 10,
   },
   registerButton: {
-    paddingVertical: 12,
+    paddingVertical: 15,
     flex: 1,
     borderRadius: 20,
     backgroundColor: "#DAA520",
     alignItems: "center",
+    elevation: 5,
   },
   buttonText: {
     color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  buttonTextLogin: {
+    color: "#000",
     fontSize: 16,
     fontWeight: "bold",
   },
